@@ -27,7 +27,11 @@ def download_bar(current,total):
     bar_length=26
     empty_fill = ' '
     fill = '#'
-    progress_percentage=current/total
+    progress_percentage=0
+    if total==0:
+        progress_percentage=1
+    else:
+        progress_percentage=current/total
     
     fill_number=int((progress_percentage*100)/(100/bar_length))
     empty_number=bar_length-fill_number
