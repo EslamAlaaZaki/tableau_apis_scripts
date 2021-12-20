@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[6]:
 
 
 import requests
@@ -10,7 +10,7 @@ import json
 import sys
 
 
-# In[ ]:
+# In[7]:
 
 
 def clearConsole():
@@ -20,7 +20,7 @@ def clearConsole():
     os.system(command)
 
 
-# In[ ]:
+# In[8]:
 
 
 def download_bar(current,total):
@@ -37,7 +37,7 @@ def download_bar(current,total):
     print(output)
 
 
-# In[ ]:
+# In[9]:
 
 
 def remove_special_characters(input):
@@ -48,7 +48,7 @@ def remove_special_characters(input):
     return input     
 
 
-# In[ ]:
+# In[10]:
 
 
 def sign_in(server_ip,api_version,username,password):
@@ -65,13 +65,14 @@ def sign_in(server_ip,api_version,username,password):
     
 
 
-# In[ ]:
+# In[11]:
 
 
 def get_projects(server_ip,api_version,site_id,token):
     
     
     projects={}
+    has_parent=[]
     page_number=1
     
     while(True):
@@ -104,15 +105,29 @@ def get_projects(server_ip,api_version,site_id,token):
                 start_index=project.find("parentProjectId=\"")+len("parentProjectId=\"")
                 end_index=project.find("\"",start_index)
                 parent_id=project[start_index:end_index]
-                parent_path=projects[parent_id]
-                projects[project_id]=parent_path+"/"+project_name 
+                #parent_path=projects[parent_id]
+                #projects[project_id]=parent_path+"/"+project_name
+                projects[project_id]=project_name
+                has_parent.append([project_id,parent_id])
+        
             else:
                 projects[project_id]=project_name
-        
+    
+    while(has_parent!=[]):
+        for i in has_parent:
+            flag=0
+            for j in has_parent:
+                if i[1]==j[0]:
+                    flag=1
+            if flag==0:
+                parent_path=projects[i[1]]
+                projects[i[0]]=parent_path+"/"+projects[i[0]]
+                has_parent.remove(i)
+                
     return projects
 
 
-# In[ ]:
+# In[12]:
 
 
 def get_workbooks(server_ip,api_version,site_id,token):
@@ -156,7 +171,7 @@ def get_workbooks(server_ip,api_version,site_id,token):
     return workbooks
 
 
-# In[ ]:
+# In[13]:
 
 
 def download_workbook(server_ip,api_version,site_id,token,workbook_id,path,file_name):
